@@ -19,13 +19,32 @@ const char* resource = "/users/1";                    // http resource
 const unsigned long BAUD_RATE = 9600;                 // serial connection speed
 const unsigned long HTTP_TIMEOUT = 10000;  // max respone time from server
 const size_t MAX_CONTENT_SIZE = 512;       // max size of the HTTP response
-byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
 
 // The type of data that we want to extract from the page
 struct UserData {
   char name[32];
   char company[32];
 };
+
+// ARDUINO entry point #1: runs once when you press reset or power the board
+void setup() {
+  initSerial();
+  initEthernet();
+}
+
+// ARDUINO entry point #2: runs over and over again forever
+void loop() {
+  if (connect(server)) {
+    if (sendRequest(server, resource) && skipResponseHeaders()) {
+      UserData userData;
+      if (readReponseContent(&userData)) {
+        printUserData(&userData);
+      }
+    }
+  }
+  disconnect();
+  wait();
+}
 
 // Initialize Serial port
 void initSerial() {
@@ -38,6 +57,7 @@ void initSerial() {
 
 // Initialize Ethernet library
 void initEthernet() {
+  byte mac[] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
   if (!Ethernet.begin(mac)) {
     Serial.println("Failed to configure Ethernet");
     return;
@@ -161,25 +181,4 @@ void disconnect() {
 void wait() {
   Serial.println("Wait 60 seconds");
   delay(60000);
-}
-
-
-// ARDUINO entry point #1: runs once when you press reset or power the board
-void setup() {
-  initSerial();
-  initEthernet();
-}
-
-// ARDUINO entry point #2: runs over and over again forever
-void loop() {
-  if (connect(server)) {
-    if (sendRequest(server, resource) && skipResponseHeaders()) {
-      UserData userData;
-      if (readReponseContent(&userData)) {
-        printUserData(&userData);
-      }
-    }
-  }
-  disconnect();
-  wait();
 }
