@@ -10,4 +10,4 @@ ratings:
   - "**.md"
 
 exclude_paths:
-  - "**/lib/**/*"
+  - "**arduino/lib/**/*"
