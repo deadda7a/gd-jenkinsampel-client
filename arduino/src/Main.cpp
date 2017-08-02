@@ -1,11 +1,8 @@
-#include <ArduinoJson.h>
 #include <SPI.h>
 #include <TM1650.h>
 #include <Wire.h>
 
 TM1650 Disp4Seg;
-// #define SDA_pin 20
-// #define SCL_pin 21
 char endMarker = '\n';
 int status = 0;
 bool building = false;
