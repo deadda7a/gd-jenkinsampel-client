@@ -11,4 +11,4 @@ install:
     - pip install -U platformio
 
 script:
-    - platformio run
+    - cd arduino; platformio run
